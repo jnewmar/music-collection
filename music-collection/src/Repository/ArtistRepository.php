@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Artist;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * @method Artist|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,6 +20,29 @@ class ArtistRepository extends ServiceEntityRepository
         parent::__construct($registry, Artist::class);
     }
 
+    public function getAll($currentPage = 1)
+    {
+        // Create our query
+        $query = $this->createQueryBuilder('art')
+            ->orderBy('art.id', 'DESC')
+            ->getQuery();
+
+        // No need to manually get get the result ($query->getResult())
+    
+
+        $paginator = $this->paginate($query, $currentPage);
+        return $paginator;
+    }
+    public function paginate($dql, $page = 1, $limit = 5)
+    {
+        $paginator = new Paginator($dql);
+
+        $paginator->getQuery()
+            ->setFirstResult($limit * ($page - 1)) // Offset
+            ->setMaxResults($limit); // Limit
+
+        return $paginator;
+    }
     // /**
     //  * @return Artist[] Returns an array of Artist objects
     //  */

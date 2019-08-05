@@ -12,8 +12,7 @@ use App\Form\AlbumType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
-
-class UdemyController extends AbstractController
+class MusicController extends AbstractController
 {
     /**
      * @Route("/", name="index")
@@ -30,45 +29,69 @@ class UdemyController extends AbstractController
     
         // Call whatever methods you've added to your User class
         // For example, if you added a getFirstName() method, you can use that.
-        return new Response('Well hi there '.$user->getUsername());
+        //return new Response('Well hi there '.$user->getUsername());
 
-        //return $this->artist();;
+        return $this->artist();;
     }
 
     /**
-     * @Route("/artist", name="artist")
+     * @Route("/artist/{page_number}", defaults={"page_number"=1}, name="artist")
      */
-    public function artist() {
+    public function artist($page_number=1) {
 
-        $artist = $this->getDoctrine()->getRepository(Artist::class)->findAll();
-       // var_dump($artist->getName());
-        return new Response('Artist <pre>'.print_r($artist));
+        $repo = $this->getDoctrine()->getRepository(Artist::class);
+        $page = $repo->getAll($page_number);
+
+        $totalReturned = $page->getIterator()->count();
+
+        $total = $page->count();
+        $iterator = $page->getIterator();
+
+        $limit = 5;
+        $maxPages = ceil($total / $limit);
+
+        
+        return $this->render(
+            'list_artist.html.twig',
+            array(
+                'title' => 'Artist',
+                'maxPages' => $maxPages,
+                'artists' => $page,
+                'thisPage' => $page_number,
+                'limit' => $limit
+            )
+        );
     }
     /**
-     * @Route("/artist/create", name="artist_create")
+     * @Route("/artist_create", name="artist_create")
      */
     public function artistCreate(Request $request)
     {
 
         $form = $this->createForm(ArtistType::class);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isvalid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $artist_tmp = $form->getData();  
             $em = $this->getDoctrine()->getmanager();
             $em->persist($artist_tmp);
             $em->flush();
+            $this->addFlash(
+                'notice',
+                'Artist created!'
+            );
+            return $this->redirectToRoute('artist');
         }
 
         return $this->render(
-            'create_artist.html.twig',
+            'create.html.twig',
             array(
-                'title' => 'Create Artists',
+                'title' => 'Create Artist',
                 'form' => $form->createView()
             )
         );
     }
     /**
-     * @Route("/artist/update/{id}", name="artist_cupdate")
+     * @Route("/artist_update/{id}", name="artist_cupdate")
      */
     public function artistUpdate(Int $id, Request $request)
     {
@@ -77,47 +100,76 @@ class UdemyController extends AbstractController
         $form->setData($artist);
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isvalid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $artist_tmp = $form->getData();  
             $em = $this->getDoctrine()->getmanager();
             $em->persist($artist_tmp);
             $em->flush();
+            $this->addFlash(
+                'notice',
+                'Artist Updated!'
+            );
+            return $this->redirectToRoute('artist');
         }
 
         return $this->render(
-            'create_artist.html.twig',
+            'create.html.twig',
             array(
-                'title' => 'Update Artists',
+                'title' => 'Update Artist',
                 'form' => $form->createView()
             )
         );
     }
     /**
-     * @Route("/album", name="album")
+     * @Route("/album/{page_number}", defaults={"page_number"=1}, name="album")
      */
-    public function album() {
+    public function album($page_number) {
 
-        $album = $this->getDoctrine()->getRepository(Album::class)->findAll();
-       // var_dump($artist->getName());
-        return new Response('album <pre>'.print_r($album));
+        $repo = $this->getDoctrine()->getRepository(Album::class);
+        $page = $repo->getAll($page_number);
+
+        $totalReturned = $page->getIterator()->count();
+
+        $total = $page->count();
+        $iterator = $page->getIterator();
+
+        $limit = 5;
+        $maxPages = ceil($total / $limit);
+
+        
+        return $this->render(
+            'list_album.html.twig',
+            array(
+                'title' => 'Album',
+                'maxPages' => $maxPages,
+                'albums' => $page,
+                'thisPage' => $page_number,
+                'limit' => $limit
+            )
+        );
     }
     /**
-     * @Route("/album/create", name="aalbum_create")
+     * @Route("/album_create", name="aalbum_create")
      */
     public function albumCreate(Request $request)
     {
 
         $form = $this->createForm(AlbumType::class);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isvalid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $album_tmp = $form->getData();  
             $em = $this->getDoctrine()->getmanager();
             $em->persist($album_tmp);
             $em->flush();
+            $this->addFlash(
+                'notice',
+                'Album Created!'
+            );
+            return $this->redirectToRoute('album');
         }
 
         return $this->render(
-            'create_artist.html.twig',
+            'create.html.twig',
             array(
                 'title' => 'Create Album',
                 'form' => $form->createView()
@@ -125,7 +177,7 @@ class UdemyController extends AbstractController
         );
     }
     /**
-     * @Route("/album/update/{id}", name="album_update")
+     * @Route("/album_update/{id}", name="album_update")
      */
     public function albumUpdate(Int $id, Request $request)
     {
@@ -134,15 +186,20 @@ class UdemyController extends AbstractController
         $form->setData($album);
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isvalid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $album_tmp = $form->getData();  
             $em = $this->getDoctrine()->getmanager();
             $em->persist($album_tmp);
             $em->flush();
+            $this->addFlash(
+                'notice',
+                'Album Updated!'
+            );
+            return $this->redirectToRoute('album');
         }
 
         return $this->render(
-            'create_artist.html.twig',
+            'create.html.twig',
             array(
                 'title' => 'Update Album',
                 'form' => $form->createView()

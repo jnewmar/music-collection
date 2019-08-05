@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <br>
+<div class="card">
+  <div class="card-header">
+    <div class="row">
+        <div class="col-10">
+            <h1>{{title}}</h1>
+        </div>
+        <div class="col-2">
+            <a class="btn btn-primary" href="/album_create">Create Album</a>
+        </div>
+    </div>    
+</div>
+  <div class="card-body">
+    {% for album in albums %}
+        {% if loop.first %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Artist</th>
+                        <th scope="col">Year</th>
+                        <th scope="col">Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+        {% endif %}
+        <tr>
+            <td scope="row">{{album.id}}</td>
+            <td>{{album.name}}</td>
+            <td>{{album.artist}}</td>
+            <td>{{album.year}}</td>
+            <td>
+                <a class="btn btn-primary" href="/album_update/{{album.id}}">Edit</a>
+            </td>
+        </tr>
+        {% if loop.last %}    
+            </tbody>
+        </table>
+        {% endif %}
+    {% else %}
+        <div class="row">
+            <div class="col-12 alert alert-dark" role="alert">Records not found</div>
+        </div>
+    {% endfor %}
+</div>
+  <div class="card-footer">
+    {% if maxPages > 1 %}
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li {{ thisPage == 1 ? 'class="disabled":class="page-item"' }}>
+                    <a class="page-link" href="/album/{{thisPage-1 < 1 ? 1 : thisPage-1}}">«</a>
+                </li>
+                {% for i in 1..maxPages %}
+                <li {{ thisPage == i ? 'class="active":class="page-item"' }}>
+                <a  class="page-link" href="/album/{{i}}">{{ i }}</a>
+                </li>
+                {% endfor %}
+
+                {# `»` arrow #}
+                <li {{ thisPage == maxPages ? 'class="disabled":class="page-item"' }}>
+                    <a  class="page-link" href="/album/{{ thisPage+1 <= maxPages ? thisPage+1 : thisPage}}">»</a>
+                </li>
+            </ul>
+        </dnav>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

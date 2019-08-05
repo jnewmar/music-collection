@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}Music Collection{% endblock %}</title>
         <!-- Meta tags Obrigatórias -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -13,9 +13,42 @@
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
+        {% if is_granted('ROLE_USER') %}
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="#">Music Collection</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/artist">Artist</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/album">Album</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                    </ul>
+
+                </div>
+            </nav>
+        {% endif %}
+
         <div class="container">
             <div class="row">
                 <div class="col-12">
+                    {# read and display just one flash message type #}
+                    {% for message in app.flashes('notice') %}
+                        <p>
+                        <div class="alert alert-success" role="alert">
+                            {{ message }}
+                        </div>
+                        </p>
+                    {% endfor %}
                     {% block body %}{% endblock %}
                 </div>
             </div>
