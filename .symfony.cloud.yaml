@@ -1,0 +1,19 @@
+name: music-collection
+
+type: php:7.3
+
+build:
+    flavor: none
+
+web:
+    commands:
+        start: sleep
+    locations:
+        "/":
+            root: "public"
+            index:
+                - "index.html"
+            scripts: false
+            expires: 10m
+
+disk: 256
