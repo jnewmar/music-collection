@@ -13,9 +13,7 @@ git clone https://github.com/jnewmar/music-collection.git
 
 cd music-collection/music-collection/
 
-Edit database settings in file .env
-
-vi ./.env
+For local env, set the variable CLEARDB_DATABASE_URL) with the mysql connection string. Ex : mysql://laravel:password@127.0.0.1:3306/music
 
 composer install
 
